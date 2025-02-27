@@ -1,0 +1,49 @@
+# prompt:  Fine-Tune a Model: Description: Load a pre-trained LSTM-based NMT model and use it to translate asentence from one language to another. Description: GUI is not necessary. It will be evaluated on the basis of accuracy score.
+
+!pip install transformers sentencepiece
+
+from transformers import MarianMTModel, MarianTokenizer
+
+# Load pre-trained model and tokenizer
+model_name = "Helsinki-NLP/opus-mt-en-fr"  # Example: English to French
+tokenizer = MarianTokenizer.from_pretrained(model_name)
+model = MarianMTModel.from_pretrained(model_name)
+
+
+def translate_sentence(sentence):
+  """
+  Translates a given sentence using the pre-trained model.
+
+  Args:
+      sentence: The sentence to translate (string).
+
+  Returns:
+      The translated sentence (string).
+  """
+  inputs = tokenizer(sentence, return_tensors="pt")
+  translated = model.generate(**inputs)
+  translated_sentence = tokenizer.decode(translated[0], skip_special_tokens=True)
+  return translated_sentence
+
+# Example Usage:
+sentence = "Hello, how are you?"
+translated_sentence = translate_sentence(sentence)
+print(f"Original sentence: {sentence}")
+print(f"Translated sentence: {translated_sentence}")
+
+
+# Example evaluation (you would need a dataset for proper evaluation):
+# Sample data
+test_sentences = [
+    "This is a test sentence.",
+    "Another sentence for translation.",
+    "How is the weather today?",
+]
+
+references = [
+    "Ceci est une phrase de test.", #replace with correct references
+    "Une autre phrase pour la traduction.", #replace with correct references
+    "Quel temps fait-il aujourd'hui ?", #replace with correct references
+]
+
+predictions = [translate_sentence(sentence) for sentence in test_sentences]
